@@ -1,0 +1,28 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Compilar OpenGL (C)",
+      "type": "shell",
+      "command": "gcc",
+      "args": [
+		"-std=c99",
+		"-o", "snakegame.exe",
+		"snakegame.c",
+		"-lglu32", "-lglut32", "-lopengl32"
+		],
+      "options": { "cwd": "${workspaceFolder}" },
+      "group": "build",
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "label": "Compilar e Rodar",
+      "type": "shell",
+      "command": ".\\snakegame.exe",
+      "options": { "cwd": "${workspaceFolder}" },
+      "dependsOn": "Compilar OpenGL (C)",
+      "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": []
+    }
+  ]
+}

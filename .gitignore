@@ -1,0 +1,4 @@
+# Binarios gerados pela compilacao
+*.exe
+*.o
+*.obj
