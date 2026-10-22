@@ -79,13 +79,13 @@ Compilado com GCC (MinGW) no Windows 11, sem erros nem avisos. O jogo foi execut
 5. **Game over:** ao bater na parede ou no corpo, aparece "GAME OVER" com a pontuação total; R reinicia e ESC encerra.
 
 > Inicio do jogo em movimento
-![Inicio / Jogo em movimeto](images/SnakeGameMov.png)
+![Início / Jogo em movimento](images/SnakeGameMov.png)
 
 > Menu do jogo
 ![Menu do jogo](images/MenuSnake.png)
 
 > Game over com pontuação total
-![Game over om pontuação total](images/GameOverSnake.png)
+![Game over com pontuação total](images/GameOverSnake.png)
 
 ## 5. Discussão
 
