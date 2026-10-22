@@ -17,7 +17,8 @@ int pecaX, pecaY;
 int pontos = 0;
 int velocidade = 150;           
 int gameOver = 0;
-int novaPecaX = 1, novaPecaY = 0;
+int menuAberto = 0;
+int proxDirX = 1, proxDirY = 0;
 int caudaX = 0, caudaY = 0;
 
 
@@ -66,16 +67,21 @@ void desenhaTexto(float x, float y, const char *texto) {
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *texto);
 }
 
-void desenhaGameOver(void) {
+void desenhaMenu(void) {
     char msg[40];
 
     glColor3f(1.0f, 0.2f, 0.2f);
-    desenhaTexto(COLUNAS / 2.0f - 2.0f, LINHAS / 2.0f + 3, "GAME OVER");
+    if (gameOver)
+        desenhaTexto(COLUNAS / 2.0f - 2.0f, LINHAS / 2.0f + 3, "GAME OVER");
+    else
+        desenhaTexto(COLUNAS / 2.0f - 1.0f, LINHAS / 2.0f + 3, "MENU");
 
     glColor3f(1.0f, 1.0f, 1.0f);
     sprintf(msg, "Pontuacao total: %d", pontos);
     desenhaTexto(COLUNAS / 2.0f - 3.0f, LINHAS / 2.0f + 1, msg);
 
+    if (!gameOver)
+        desenhaTexto(COLUNAS / 2.0f - 3.0f, LINHAS / 2.0f - 1, "M - Continuar");
     desenhaTexto(COLUNAS / 2.0f - 5.0f, LINHAS / 2.0f - 2, "R - Jogar novamente");
     desenhaTexto(COLUNAS / 2.0f - 3.5f, LINHAS / 2.0f - 3, "ESC - Sair");
 }
@@ -110,8 +116,9 @@ void reiniciaJogo(void) {
     velocidade = 150;
     dirX = 1;
     dirY = 0;
-    novaPecaX = 1; novaPecaY = 0;
+    proxDirX = 1; proxDirY = 0;
     gameOver = 0;
+    menuAberto = 0;
 
     inicializaCobra();   // recoloca os 3 blocos
     geraPeca();          // sorteia depois, com a cobra já no lugar
@@ -167,8 +174,8 @@ void comePeca(void) {
 void display(void) {
     glClear(GL_COLOR_BUFFER_BIT);
 
-    if (gameOver) {
-        desenhaGameOver();
+    if (gameOver || menuAberto) {
+        desenhaMenu();
     } else {
         desenhaBordas();
         desenhaPeca();
@@ -179,14 +186,16 @@ void display(void) {
 }
 
 void timer(int valor) {
-    dirX = novaPecaX;
-    dirY = novaPecaY;
-    moveCobra();
+    if (!menuAberto) {
+        dirX = proxDirX;
+        dirY = proxDirY;
+        moveCobra();
 
-    if (verificaColisao()) {
-        gameOver = 1;
-    } else {
-        comePeca();
+        if (verificaColisao()) {
+            gameOver = 1;
+        } else {
+            comePeca();
+        }
     }
 
     glutPostRedisplay();
@@ -197,29 +206,45 @@ void timer(int valor) {
 void teclado(int tecla, int x, int y) {
 
     if (tecla == GLUT_KEY_UP && dirY != -1) {
-        novaPecaX = 0; novaPecaY = 1;
+        proxDirX = 0; proxDirY = 1;
     } else if (tecla == GLUT_KEY_DOWN && dirY != 1) {
-        novaPecaX = 0; novaPecaY = -1;
+        proxDirX = 0; proxDirY = -1;
     } else if (tecla == GLUT_KEY_LEFT && dirX != 1) {
-        novaPecaX = -1; novaPecaY = 0;
+        proxDirX = -1; proxDirY = 0;
     } else if (tecla == GLUT_KEY_RIGHT && dirX != -1) {
-        novaPecaX = 1; novaPecaY = 0;
+        proxDirX = 1; proxDirY = 0;
     }
 }
 
 void tecladoLetras(unsigned char tecla, int x, int y) {
 
-    if (gameOver) {
-        if (tecla == 'r' || tecla == 'R') { // reinicia o jogo
-            reiniciaJogo();
-            glutTimerFunc(velocidade, timer, 0);
+    if (tecla == 27) { // ESC: abre o menu durante o jogo; no menu/game over, sai
+        if (gameOver || menuAberto)
+            exit(0);
+        menuAberto = 1;
+        glutPostRedisplay();
+        return;
+    }
+
+    if (tecla == 'm' || tecla == 'M') { // abre/fecha o menu
+        if (!gameOver) {
+            menuAberto = !menuAberto;
             glutPostRedisplay();
         }
-        if (tecla == 27) { // ESC
-            exit(0);    
-        }
+        return;
     }
-    
+
+    if (gameOver || menuAberto) {
+        if (tecla == 'r' || tecla == 'R') { // reinicia o jogo
+            int timerParado = gameOver; // o timer só para no game over
+            reiniciaJogo();
+            if (timerParado)
+                glutTimerFunc(velocidade, timer, 0);
+            glutPostRedisplay();
+        }
+        return;
+    }
+
     if (tecla == 'w' || tecla == 'W') teclado(GLUT_KEY_UP,    x, y);
     if (tecla == 's' || tecla == 'S') teclado(GLUT_KEY_DOWN,  x, y);
     if (tecla == 'a' || tecla == 'A') teclado(GLUT_KEY_LEFT,  x, y);

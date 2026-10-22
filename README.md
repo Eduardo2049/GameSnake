@@ -7,8 +7,9 @@ Jogo da cobrinha feito em C com OpenGL/GLUT.
 | Tecla | Ação |
 | --- | --- |
 | Setas ou W A S D | Mover a cobra |
-| R | Jogar novamente (na tela de game over) |
-| ESC | Sair (na tela de game over) |
+| ESC ou M | Abrir o menu (pausa o jogo); M também continua |
+| R | Jogar novamente (no menu ou no game over) |
+| ESC (no menu ou game over) | Sair |
 
 Cada peça vermelha comida vale 1 ponto e aumenta a cobra. A cada 5 pontos a velocidade aumenta. O jogo acaba ao bater na parede ou no próprio corpo.
 
